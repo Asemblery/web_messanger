@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Web Messenger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2b2d31 0%, #36393f 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .registration-container {
+            background-color: #36393f;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #5865f2;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #b9bbbe;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #b9bbbe;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #40444b;
+            border-radius: 5px;
+            background-color: #303338;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #5865f2;
+            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: #72767d;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background-color: #4752c4;
+        }
+
+        .submit-button:active {
+            transform: translateY(1px);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #40444b;
+        }
+
+        .login-link p {
+            color: #b9bbbe;
+            margin-bottom: 15px;
+        }
+
+        .login-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: #5865f2;
+            border: 1px solid #5865f2;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .login-button:hover {
+            background-color: rgba(88, 101, 242, 0.1);
+        }
+
+        .error-message {
+            background-color: #ed4245;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #3ba55c;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .password-strength {
+            height: 4px;
+            background-color: #40444b;
+            border-radius: 2px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .strength-weak { background-color: #ed4245; width: 33%; }
+        .strength-medium { background-color: #faa81a; width: 66%; }
+        .strength-strong { background-color: #3ba55c; width: 100%; }
+    </style>
+</head>
+<body>
+    <div class="registration-container">
+        <div class="logo">
+            <h1>Web Messenger</h1>
+            <p>Присоединяйтесь к нашему сообществу</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="registrationForm">
+            <div class="form-group">
+                <label class="form-label" for="username">Никнейм</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="Введите ваш никнейм" required minlength="3" maxlength="20">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="email">Электронная почта</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Пароль</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Введите пароль" required minlength="6">
+                <div class="password-strength">
+                    <div id="strengthBar" class="strength-bar"></div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="confirmPassword">Подтверждение пароля</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="Повторите пароль" required>
+            </div>
+
+            <button type="submit" class="submit-button" id="submitButton">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="login-link">
+            <p>Уже есть аккаунт?</p>
+            <a href="/login" class="login-button">Войти в аккаунт</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const submitButton = document.getElementById('submitButton');
+            const passwordInput = document.getElementById('password');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const strengthBar = document.getElementById('strengthBar');
+
+            // Проверка сложности пароля
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+
+                if (password.length >= 6) strength += 1;
+                if (password.match(/[a-zа-я]+/)) strength += 1;
+                if (password.match(/[A-ZА-Я]+/)) strength += 1;
+                if (password.match(/[0-9]+/)) strength += 1;
+                if (password.match(/[!@#$%^&*(),.?":{}|<>]+/)) strength += 1;
+
+                strengthBar.className = 'strength-bar';
+                if (password.length > 0) {
+                    if (strength <= 2) {
+                        strengthBar.classList.add('strength-weak');
+                    } else if (strength <= 4) {
+                        strengthBar.classList.add('strength-medium');
+                    } else {
+                        strengthBar.classList.add('strength-strong');
+                    }
+                }
+            });
+
+            // Проверка совпадения паролей
+            confirmPasswordInput.addEventListener('input', function() {
+                if (this.value !== passwordInput.value) {
+                    this.style.borderColor = '#ed4245';
+                } else {
+                    this.style.borderColor = '#40444b';
+                }
+            });
+
+            // Обработка отправки формы
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Валидация паролей
+                if (passwordInput.value !== confirmPasswordInput.value) {
+                    showError('Пароли не совпадают');
+                    return;
+                }
+
+                if (passwordInput.value.length < 6) {
+                    showError('Пароль должен содержать минимум 6 символов');
+                    return;
+                }
+
+                const formData = {
+                    operation: "registration",
+                    username: document.getElementById('username').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    password: passwordInput.value
+                };
+
+                // Валидация email
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    showError('Введите корректный email адрес');
+                    return;
+                }
+
+                // Показываем загрузку
+                submitButton.classList.add('loading');
+                submitButton.textContent = 'Регистрация...';
+
+                try {
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showSuccess('Регистрация успешна! Перенаправление...');
+                        // Перенаправление на страницу входа или чата
+                        setTimeout(() => {
+                            window.location.href = '/login';
+                        }, 2000);
+                    } else {
+                        showError(data.error || 'Ошибка регистрации');
+                    }
+                } catch (error) {
+                    showError('Ошибка соединения с сервером');
+                } finally {
+                    submitButton.classList.remove('loading');
+                    submitButton.textContent = 'Зарегистрироваться';
+                }
+            });
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+
+                // Автоматическое скрытие через 5 секунд
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+
+            // Очистка ошибок при изменении полей
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    errorMessage.style.display = 'none';
+                    successMessage.style.display = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Web Messenger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #2b2d31 0%, #36393f 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background-color: #36393f;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #5865f2;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .logo p {
+            color: #b9bbbe;
+            font-size: 1.1em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #b9bbbe;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #40444b;
+            border-radius: 5px;
+            background-color: #303338;
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #5865f2;
+            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
+        }
+
+        .form-input::placeholder {
+            color: #72767d;
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .submit-button:hover {
+            background-color: #4752c4;
+        }
+
+        .submit-button:active {
+            transform: translateY(1px);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #40444b;
+        }
+
+        .register-link p {
+            color: #b9bbbe;
+            margin-bottom: 15px;
+        }
+
+        .register-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: transparent;
+            color: #5865f2;
+            border: 1px solid #5865f2;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .register-button:hover {
+            background-color: rgba(88, 101, 242, 0.1);
+        }
+
+        .error-message {
+            background-color: #ed4245;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #3ba55c;
+            color: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #5865f2;
+        }
+
+        .remember-me label {
+            color: #b9bbbe;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #5865f2;
+            text-decoration: none;
+            font-size: 0.9em;
+            transition: color 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            color: #4752c4;
+            text-decoration: underline;
+        }
+
+        .demo-accounts {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #2f3136;
+            border-radius: 5px;
+            border-left: 4px solid #5865f2;
+        }
+
+        .demo-title {
+            color: #b9bbbe;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .demo-account {
+            color: #72767d;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>Web Messenger</h1>
+            <p>С возвращением!</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="login">Имя пользователя или Email</label>
+                <input type="text" id="login" name="login" class="form-input" placeholder="Введите ваш никнейм или email" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Пароль</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Введите ваш пароль" required>
+            </div>
+
+
+
+
+            <button type="submit" class="submit-button" id="submitButton">
+                Войти в аккаунт
+            </button>
+        </form>
+
+
+
+        <div class="register-link">
+            <p>Еще нет аккаунта?</p>
+            <a href="/register" class="register-button">Зарегистрироваться</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const submitButton = document.getElementById('submitButton');
+
+            // Проверяем сохраненные данные для "Запомнить меня"
+            const savedLogin = localStorage.getItem('savedLogin');
+            const rememberMe = localStorage.getItem('rememberMe') === 'true';
+            
+            if (savedLogin && rememberMe) {
+                document.getElementById('login').value = savedLogin;
+                document.getElementById('rememberMe').checked = true;
+            }
+
+            // Обработка отправки формы
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const formData = {
+                    operation: "authorization",
+                    login: document.getElementById('login').value.trim(),
+                    password: document.getElementById('password').value,
+
+                };
+
+                // Базовая валидация
+                if (!formData.login || !formData.password) {
+                    showError('Заполните все поля');
+                    return;
+                }
+
+                // Сохраняем логин если выбрано "Запомнить меня"
+                if (formData.rememberMe) {
+                    localStorage.setItem('savedLogin', formData.login);
+                    localStorage.setItem('rememberMe', 'true');
+                } else {
+                    localStorage.removeItem('savedLogin');
+                    localStorage.removeItem('rememberMe');
+                }
+
+                // Показываем загрузку
+                submitButton.classList.add('loading');
+                submitButton.textContent = 'Вход...';
+
+                try {
+                    const response = await fetch('/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showSuccess('Вход выполнен успешно! Перенаправление...');
+                        
+                        // Сохраняем токен если он есть в ответе
+                        if (data.token) {
+                            localStorage.setItem('authToken', data.token);
+                        }
+                        
+                        if (data.user) {
+                            localStorage.setItem('currentUser', JSON.stringify(data.user));
+                        }
+
+                        // Перенаправление на главную страницу или чат
+                        setTimeout(() => {
+                            window.location.href = data.redirectUrl || '/mainpage';
+                        }, 1500);
+                    } else {
+                        showError(data.error || 'Ошибка входа');
+                    }
+                } catch (error) {
+                    showError('Ошибка соединения с сервером');
+                    console.error('Login error:', error);
+                } finally {
+                    submitButton.classList.remove('loading');
+                    submitButton.textContent = 'Войти в аккаунт';
+                }
+            });
+
+
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+                
+                // Автоматическое скрытие через 5 секунд
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+
+            // Очистка ошибок при изменении полей
+            const inputs = form.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', () => {
+                    errorMessage.style.display = 'none';
+                    successMessage.style.display = 'none';
+                });
+            });
+
+            // Автофокус на поле логина
+            document.getElementById('login').focus();
+        });
+    </script>
+</body>
+</html>

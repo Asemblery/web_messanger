@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Messenger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            height: 100vh;
+            display: flex;
+        }
+
+        /* Сайдбар контактов */
+        .contacts-sidebar {
+            width: 350px;
+            background-color: #2b2d31;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #40444b;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: #232428;
+            border-bottom: 1px solid #40444b;
+        }
+
+        .search-container {
+            padding: 15px;
+            border-bottom: 1px solid #40444b;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            background-color: #1e1f22;
+            color: white;
+            outline: none;
+        }
+
+        .contacts-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .contact-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #40444b;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-item:hover {
+            background-color: #35373c;
+        }
+
+        .contact-item.active {
+            background-color: #40444b;
+        }
+
+        .contact-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #5865f2;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .last-message {
+            font-size: 0.9em;
+            color: #b9bbbe;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Основной чат */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #36393f;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background-color: #36393f;
+            border-bottom: 1px solid #40444b;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-user-info {
+            margin-left: 15px;
+        }
+
+        .chat-user-name {
+            font-weight: 600;
+            font-size: 1.2em;
+        }
+
+        .chat-user-status {
+            font-size: 0.9em;
+            color: #b9bbbe;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #36393f;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .message.received {
+            background-color: #40444b;
+            color: white;
+            align-self: flex-start;
+        }
+
+        .message.sent {
+            background-color: #5865f2;
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+
+        .message-sender {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .message-text {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .message-time {
+            font-size: 0.8em;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .message-input-container {
+            padding: 20px;
+            background-color: #40444b;
+            display: flex;
+            gap: 10px;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 20px;
+            border: none;
+            background-color: #484c52;
+            color: white;
+            outline: none;
+            font-size: 1em;
+        }
+
+        .send-button {
+            padding: 12px 25px;
+            background-color: #5865f2;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .send-button:hover {
+            background-color: #4752c4;
+        }
+
+        .empty-chat {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #72767d;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <!-- Боковая панель контактов -->
+    <div class="contacts-sidebar">
+        <div class="sidebar-header">
+            <h2>Сообщения</h2>
+        </div>
+
+        <!-- Заменяем блок .search-container на этот: -->
+<div class="search-container">
+    <div class="search-input-wrapper">
+        <input type="text" class="search-input" id="searchContactInput" placeholder="Введите имя пользователя...">
+        <button class="add-contact-search-btn" id="addContactSearchBtn" title="Добавить контакт">+</button>
+    </div>
+</div>
+
+        <div class="contacts-list">
+            <!-- Контакты будут добавляться через JavaScript -->
+        </div>
+    </div>
+
+    <!-- Основная область чата -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="contact-avatar">U</div>
+            <div class="chat-user-info">
+                <div class="chat-user-name">Выберите чат</div>
+                <div class="chat-user-status">Начните общение</div>
+            </div>
+        </div>
+
+        <div class="messages-container">
+            <div class="empty-chat">
+                Выберите чат, чтобы начать общение
+            </div>
+            <!-- Сообщения будут добавляться через JavaScript -->
+        </div>
+
+        <div class="message-input-container">
+            <input type="text" class="message-input" placeholder="Введите сообщение..." disabled>
+            <button class="send-button" disabled>Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        // Пример данных для демонстрации
+        const contacts = JSON.parse('{{ contacts | tojson | safe }}');
+        const messages = JSON.parse('{{ messages | tojson | safe }}');
+
+
+
+
+
+        // Функция для отрисовки контактов
+        function renderContacts() {
+            const contactsList = document.querySelector('.contacts-list');
+            contactsList.innerHTML = '';
+
+            contacts.forEach(contact => {
+                const contactElement = document.createElement('div');
+                contactElement.className = 'contact-item';
+                contactElement.innerHTML = `
+                    <div class="contact-avatar">${contact.name.charAt(0)}</div>
+                    <div class="contact-info">
+                        <div class="contact-name">${contact.name}</div>
+
+                    </div>
+
+                `;
+
+                contactElement.addEventListener('click', () => openChat(contact.id));
+                contactsList.appendChild(contactElement);
+            });
+        }
+
+        function convertToLocalTime(utcTime) {
+            // Получаем смещение браузера в часах
+            const timezoneOffset = new Date().getTimezoneOffset() / 60;
+
+            // Время приходит как "13:45"
+            const [hours, minutes] = utcTime.split(':');
+
+            // UTC время из базы + смещение = локальное время
+            let newHours = (parseInt(hours) - timezoneOffset) % 24;
+            if (newHours < 0) newHours += 24; // Корректировка если меньше 0
+
+            return `${newHours.toString().padStart(2, '0')}:${minutes}`;
+        }
+
+        // Функция для открытия чата
+        function openChat(contactId) {
+            const contact = contacts.find(c => c.id === contactId);
+            if (!contact) return;
+
+            // Обновляем заголовок чата
+            document.querySelector('.chat-user-name').textContent = contact.name;
+
+
+            // Очищаем контейнер сообщений
+            const messagesContainer = document.querySelector('.messages-container');
+            messagesContainer.innerHTML = '';
+
+            // Добавляем сообщения
+            const chatMessages = messages[contactId] || [];
+            chatMessages.forEach(msg => {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message ${msg.sent ? 'sent' : 'received'}`;
+                messageElement.innerHTML = `
+                    ${!msg.sent ? `<div class="message-sender">${contact.name}</div>` : ''}
+                    <div class="message-text">${msg.text}</div>
+                    <div class="message-time">${convertToLocalTime(msg.time)}</div>
+                `;
+                messagesContainer.appendChild(messageElement);
+            });
+
+            // Прокручиваем вниз
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Активируем поле ввода
+            document.querySelector('.message-input').disabled = false;
+            document.querySelector('.send-button').disabled = false;
+
+            // Обновляем активный контакт
+            document.querySelectorAll('.contact-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.contact-item')[contactId - 1].classList.add('active');
+        }
+
+        function getFullTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        }
+        // Функция для отправки сообщения
+        async function sendMessage() {
+            const input = document.querySelector('.message-input');
+            const content = input.value.trim();
+
+            if (!content) {
+                alert('Введите сообщение');
+                return;
+            }
+
+            // Получаем имя получателя из заголовка чата
+            const receiverName = document.querySelector('.chat-user-name').textContent;
+
+            if (!receiverName || receiverName === 'Выберите чат') {
+                alert('Сначала выберите чат');
+                return;
+            }
+
+            const btn = document.querySelector('.send-button');
+            btn.disabled = true;
+            btn.textContent = '...';
+
+            try {
+                const response = await fetch('/send-message', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        receiver_name: receiverName,
+                        content: content,
+                        time: getFullTime()
+                    })
+                });
+
+            const data = await response.json();
+
+            if (data.success) {
+                input.value = '';
+                // Показываем сообщение в чате
+                const messagesContainer = document.querySelector('.messages-container');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message sent';
+                messageDiv.innerHTML = `
+                    <div class="message-text">${content}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                `;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            } else {
+                alert(data.error || 'Ошибка при отправке');
+            }
+        } catch (error) {
+            alert('Ошибка соединения с сервером');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Отправить';
+        }
+}
+
+// Функция добавления сообщения в чат
+function addMessageToChat(message) {
+    const messagesContainer = document.querySelector('.messages-container');
+
+    const messageElement = document.createElement('div');
+    messageElement.className = `message ${message.is_sent ? 'sent' : 'received'}`;
+    messageElement.innerHTML = `
+        <div class="message-text">${message.content}</div>
+        <div class="message-time">${message.timestamp}</div>
+    `;
+
+    messagesContainer.appendChild(messageElement);
+
+    // Прокручиваем вниз
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            renderContacts();
+
+            // Обработчик отправки сообщения
+            document.querySelector('.send-button').addEventListener('click', sendMessage);
+
+            document.querySelector('.message-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+
+
+        const searchInput = document.getElementById('searchContactInput');
+        const addContactBtn = document.getElementById('addContactSearchBtn');
+
+// Обработчик клика по кнопке добавления
+addContactBtn.addEventListener('click', function() {
+    const username = searchInput.value.trim();
+    if (username) {
+        addContact(username);
+    }
+});
+
+// Обработчик клавиши Enter
+searchInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        const username = this.value.trim();
+        if (username) {
+            addContact(username);
+        }
+    }
+});
+
+// Функция добавления контакта
+async function addContact(username) {
+    // Блокируем кнопку на время отправки
+    addContactBtn.disabled = true;
+    addContactBtn.textContent = '...';
+
+    try {
+        const response = await fetch('/add-contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username: username })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Очищаем поле ввода
+            searchInput.value = '';
+
+            // Обновляем список контактов если сервер вернул новый контакт
+            if (data.contact) {
+                contacts.push(data.contact);
+                renderContacts();
+            }
+
+            // Показываем сообщение об успехе
+            alert('Контакт успешно добавлен!');
+        } else {
+            alert(data.error || 'Ошибка при добавлении контакта');
+        }
+    } catch (error) {
+        console.error('Add contact error:', error);
+        alert('Ошибка соединения с сервером');
+    } finally {
+        // Разблокируем кнопку
+        addContactBtn.disabled = false;
+        addContactBtn.textContent = '+';
+    }
+}
+
+
+// Блокируем кнопку если поле пустое
+searchInput.addEventListener('input', function() {
+    addContactBtn.disabled = !this.value.trim();
+});
+
+// Изначально блокируем кнопку
+addContactBtn.disabled = true;
+    </script>
+</body>
+</html>
